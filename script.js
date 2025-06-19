@@ -18,12 +18,16 @@ const auth = getAuth(app);
 const database = getDatabase(app);
 
 window.registrar = () => {
+  const nombre = document.getElementById('nombre').value;
   const email = document.getElementById('email').value;
   const clave = document.getElementById('password').value;
   createUserWithEmailAndPassword(auth, email, clave)
     .then(userCred => {
       const user = userCred.user;
-      set(ref(database, 'usuarios/' + user.uid), { email: user.email });
+      set(ref(database, 'usuarios/' + user.uid), {
+        email: user.email,
+        nombre: nombre
+      });
       alert("Registro exitoso");
       window.location.href = "index.html";
     })
@@ -57,7 +61,17 @@ const clasesDisponibles = [
 window.cargarClases = () => {
   const uid = sessionStorage.getItem('usuarioID');
   if (!uid) { window.location.href = "index.html"; return; }
-  document.getElementById('nombreUsuario').textContent = uid;
+
+  const usuarioRef = ref(database, 'usuarios/' + uid);
+  get(usuarioRef).then(snapshot => {
+    if (snapshot.exists()) {
+      const datos = snapshot.val();
+      document.getElementById('nombreUsuario').textContent = datos.nombre || datos.email;
+    } else {
+      document.getElementById('nombreUsuario').textContent = "Usuario";
+    }
+  });
+
   const contenedor = document.getElementById('clases');
   contenedor.innerHTML = "";
   clasesDisponibles.forEach((c, i) => {
@@ -103,4 +117,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const registroForm = document.getElementById("registroForm");
   if (registroForm) registroForm.addEventListener("submit", e => { e.preventDefault(); registrar(); });
+});
+
+
+window.guardarNuevoNombre = () => {
+  const uid = sessionStorage.getItem('usuarioID');
+  const nuevoNombre = document.getElementById('nuevoNombre').value;
+  if (!uid) {
+    alert("No estás logueado.");
+    return;
+  }
+
+  set(ref(database, 'usuarios/' + uid + '/nombre'), nuevoNombre)
+    .then(() => {
+      alert("Nombre actualizado con éxito.");
+      window.location.href = "home.html";
+    })
+    .catch((error) => {
+      alert("Error al actualizar el nombre: " + error.message);
+    });
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  const editarForm = document.getElementById("editarForm");
+  if (editarForm) {
+    editarForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      guardarNuevoNombre();
+    });
+  }
 });

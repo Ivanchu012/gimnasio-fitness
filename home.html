@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Gimnasio Fitness</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body onload="cargarClases()">
   <h2>Bienvenido, <span id="nombreUsuario"></span></h2>
   <button onclick="logout()">Cerrar sesión</button>
@@ -13,4 +15,61 @@
   <ul id="misReservas"></ul>
   <script type="module" src="script.js"></script>
 </body>
+<a href="editar.html">Editar perfil</a>
+<script>
+  // Mostrar el nombre del usuario
+  document.getElementById('nombreUsuario').textContent = localStorage.getItem('nombre');
+
+  // Función para cargar las clases disponibles
+  function cargarClases() {
+    const clases = JSON.parse(localStorage.getItem('clases')) || [];
+    const clasesDiv = document.getElementById('clases');
+    clasesDiv.innerHTML = '';
+
+    clases.forEach((clase, index) => {
+      const claseDiv = document.createElement('div');
+      claseDiv.innerHTML = `
+        <h4>${clase.nombre}</h4>
+        <p>Fecha: ${clase.fecha}</p>
+        <button onclick="reservarClase(${index})">Reservar</button>
+      `;
+      clasesDiv.appendChild(claseDiv);
+    });
+  }
+
+  // Función para reservar una clase
+  function reservarClase(index) {
+    const reservas = JSON.parse(localStorage.getItem('reservas')) || [];
+    const clases = JSON.parse(localStorage.getItem('clases')) || [];
+    reservas.push(clases[index]);
+    localStorage.setItem('reservas', JSON.stringify(reservas));
+    alert('Clase reservada con éxito');
+    cargarMisReservas();
+  }
+
+  // Función para cargar las reservas del usuario
+  function cargarMisReservas() {
+    const reservas = JSON.parse(localStorage.getItem('reservas')) || [];
+    const misReservasUl = document.getElementById('misReservas');
+    misReservasUl.innerHTML = '';
+
+    reservas.forEach((reserva) => {
+      const li = document.createElement('li');
+      li.textContent = `${reserva.nombre} - ${reserva.fecha}`;
+      misReservasUl.appendChild(li);
+    });
+  }
+
+  // Cargar las reservas al inicio
+  cargarMisReservas();
+
+  // Función para cerrar sesión
+  function logout() {
+    localStorage.removeItem('email');
+    localStorage.removeItem('nombre');
+    window.location.href = 'index.html';
+  }
+</script>
+</body>
+
 </html>
