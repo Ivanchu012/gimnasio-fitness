@@ -115,12 +115,21 @@ window.mostrarReservas = () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("loginForm");
-  if (loginForm) loginForm.addEventListener("submit", e => { e.preventDefault(); login(); });
+  if (loginForm) {
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      login();
+    });
+  }
 
   const registroForm = document.getElementById("registroForm");
-  if (registroForm) registroForm.addEventListener("submit", e => { e.preventDefault(); registrar(); });
+  if (registroForm) {
+    registroForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      registrar();
+    });
+  }
 });
-
 
 window.guardarNuevoNombre = () => {
   const uid = sessionStorage.getItem('usuarioID');
