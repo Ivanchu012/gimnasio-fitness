@@ -71,6 +71,8 @@ window.cargarClases = () => {
       document.getElementById('nombreUsuario').textContent = "Usuario";
     }
   });
+  <script type="module" src="script.js"></script>
+  document.getElementById('usuarioID').textContent = uid;
 
   const contenedor = document.getElementById('clases');
   contenedor.innerHTML = "";
