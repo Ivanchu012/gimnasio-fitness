@@ -160,13 +160,29 @@ mostrarReservas();
 
 function guardarNuevoNombre() {
   const uid = sessionStorage.getItem('usuarioID');
+  if (!uid) {
+    alert("No hay sesión activa.");
+    window.location.href = "index.html";
+    return;
+  }
+
   const nuevoNombre = document.getElementById('nuevoNombre').value;
+  if (!nuevoNombre) {
+    alert("Por favor escribí un nuevo nombre.");
+    return;
+  }
+
+  // Actualizar solo el campo nombre en la base de datos
   set(ref(database, 'usuarios/' + uid + '/nombre'), nuevoNombre)
     .then(() => {
-      alert("Nombre actualizado");
+      alert("Nombre actualizado correctamente");
       window.location.href = "home.html";
+    })
+    .catch((error) => {
+      alert("Error al actualizar nombre: " + error.message);
     });
 }
+
 
 // Registrar eventos al cargar página
 document.addEventListener("DOMContentLoaded", () => {
@@ -180,7 +196,16 @@ document.addEventListener("DOMContentLoaded", () => {
   if (editarForm) editarForm.addEventListener("submit", e => { e.preventDefault(); guardarNuevoNombre(); });
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+  const editarForm = document.getElementById("editarForm");
+  if (editarForm) editarForm.addEventListener("submit", e => {
+    e.preventDefault();
+    guardarNuevoNombre();
+  });
+});
+
 // Exponer funciones globales para HTML
 window.cargarClases = cargarClases;
 window.logout = logout;
 window.reservarClase = reservarClase;
+
