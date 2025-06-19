@@ -26,6 +26,8 @@ function registrar() {
   createUserWithEmailAndPassword(auth, email, clave)
     .then((userCred) => {
       const user = userCred.user;
+
+      // Guardar nombre y email en Realtime Database
       return set(ref(database, 'usuarios/' + user.uid), {
         email: user.email,
         nombre: nombre
@@ -39,6 +41,7 @@ function registrar() {
       alert("Error al registrar: " + e.message);
     });
 }
+
 
 function login() {
   const email = document.getElementById('email').value;
@@ -75,31 +78,39 @@ function cargarClases() {
     return;
   }
 
+  // Mostrar nombre personalizado desde Firebase
   const usuarioRef = ref(database, 'usuarios/' + uid);
-  get(usuarioRef).then(snapshot => {
-    if (snapshot.exists()) {
-      const datos = snapshot.val();
-      // Mostrar nombre o email
-      document.getElementById('nombreUsuario').textContent = datos.nombre || datos.email || "Usuario";
-    } else {
+  get(usuarioRef)
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        const datos = snapshot.val();
+        document.getElementById('nombreUsuario').textContent = datos.nombre || datos.email;
+      } else {
+        document.getElementById('nombreUsuario').textContent = "Usuario";
+      }
+    })
+    .catch((error) => {
+      console.error("Error al obtener datos del usuario:", error);
       document.getElementById('nombreUsuario').textContent = "Usuario";
-    }
-  }).catch(() => {
-    document.getElementById('nombreUsuario').textContent = "Usuario";
-  });
+    });
 
+  // Mostrar lista de clases
   const contenedor = document.getElementById('clases');
   contenedor.innerHTML = "";
-  clasesDisponibles.forEach((c, i) => {
+  clasesDisponibles.forEach((clase, index) => {
     contenedor.innerHTML += `
       <div>
-        <strong>${c.nombre}</strong><br>Días: ${c.dias}<br>Horario: ${c.horario}
-        <button onclick="reservarClase(${i})">Reservar</button>
-      </div><br>`;
+        <strong>${clase.nombre}</strong><br>
+        Días: ${clase.dias}<br>
+        Horario: ${clase.horario}<br>
+        <button onclick="reservarClase(${index})">Reservar</button>
+      </div><br>
+    `;
   });
 
   mostrarReservas();
 }
+
 
 function reservarClase(index) {
   const uid = sessionStorage.getItem('usuarioID');
@@ -119,13 +130,18 @@ function reservarClase(index) {
 
 function mostrarReservas() {
   const uid = sessionStorage.getItem('usuarioID');
+  if (!uid) return;
+
   const lista = document.getElementById('misReservas');
   if (!lista) return;
   lista.innerHTML = "";
-  get(ref(database, 'usuarios/' + uid + '/reservas'))
-    .then(snapshot => {
+
+  const reservasRef = ref(database, 'usuarios/' + uid + '/reservas');
+  get(reservasRef)
+    .then((snapshot) => {
       if (snapshot.exists()) {
-        Object.values(snapshot.val()).forEach(r => {
+        const reservas = snapshot.val();
+        Object.values(reservas).forEach((r) => {
           const li = document.createElement('li');
           li.textContent = `${r.nombre} - ${r.dias} a las ${r.horario}`;
           lista.appendChild(li);
@@ -133,8 +149,14 @@ function mostrarReservas() {
       } else {
         lista.innerHTML = "<li>No tenés reservas aún</li>";
       }
+    })
+    .catch((error) => {
+      console.error("Error al mostrar reservas:", error);
+      lista.innerHTML = "<li>Error al obtener reservas</li>";
     });
 }
+mostrarReservas();
+
 
 function guardarNuevoNombre() {
   const uid = sessionStorage.getItem('usuarioID');
