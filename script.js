@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getDatabase, ref, set, push, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+// Tu configuración de Firebase (reemplaza con la tuya)
 const firebaseConfig = {
   apiKey: "AIzaSyBoc1H3z6v0oIbxy7ZJd5tiwlYdLUWpsTI",
   authDomain: "proyecto-fit-ffd45.firebaseapp.com",
@@ -9,48 +10,56 @@ const firebaseConfig = {
   projectId: "proyecto-fit-ffd45",
   storageBucket: "proyecto-fit-ffd45.appspot.com",
   messagingSenderId: "334327777255",
-  appId: "1:334327777255:web:c644d7815b9902ddfedf42",
-  measurementId: "G-N2QTCJGR56"
+  appId: "1:334327777255:web:c644d7815b9902ddfedf42"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const database = getDatabase(app);
 
-window.registrar = () => {
+function registrar() {
   const nombre = document.getElementById('nombre').value;
   const email = document.getElementById('email').value;
   const clave = document.getElementById('password').value;
+
   createUserWithEmailAndPassword(auth, email, clave)
-    .then(userCred => {
+    .then((userCred) => {
       const user = userCred.user;
-      set(ref(database, 'usuarios/' + user.uid), {
+      return set(ref(database, 'usuarios/' + user.uid), {
         email: user.email,
         nombre: nombre
       });
+    })
+    .then(() => {
       alert("Registro exitoso");
       window.location.href = "index.html";
     })
-    .catch(e => alert("Error: " + e.message));
-};
+    .catch((e) => {
+      alert("Error al registrar: " + e.message);
+    });
+}
 
-window.login = () => {
+function login() {
   const email = document.getElementById('email').value;
   const clave = document.getElementById('password').value;
+
   signInWithEmailAndPassword(auth, email, clave)
-    .then(userCred => {
+    .then((userCred) => {
       sessionStorage.setItem('usuarioID', userCred.user.uid);
+      alert("Inicio de sesión exitoso");
       window.location.href = "home.html";
     })
-    .catch(e => alert("Error: " + e.message));
-};
+    .catch((e) => {
+      alert("Error al iniciar sesión: " + e.message);
+    });
+}
 
-window.logout = () => {
+function logout() {
   signOut(auth).then(() => {
     sessionStorage.removeItem('usuarioID');
     window.location.href = "index.html";
-  }).catch(() => alert("No se pudo cerrar sesión"));
-};
+  });
+}
 
 const clasesDisponibles = [
   { nombre: "Zumba", dias: "Lunes y Miércoles", horario: "18:00" },
@@ -58,7 +67,7 @@ const clasesDisponibles = [
   { nombre: "Yoga", dias: "Viernes", horario: "17:00" }
 ];
 
-window.cargarClases = () => {
+function cargarClases() {
   const uid = sessionStorage.getItem('usuarioID');
   if (!uid) { window.location.href = "index.html"; return; }
 
@@ -71,8 +80,6 @@ window.cargarClases = () => {
       document.getElementById('nombreUsuario').textContent = "Usuario";
     }
   });
-  <script type="module" src="script.js"></script>
-  document.getElementById('usuarioID').textContent = uid;
 
   const contenedor = document.getElementById('clases');
   contenedor.innerHTML = "";
@@ -83,78 +90,68 @@ window.cargarClases = () => {
         <button onclick="reservarClase(${i})">Reservar</button>
       </div><br>`;
   });
+
   mostrarReservas();
-};
+}
 
-window.reservarClase = index => {
+function reservarClase(index) {
   const uid = sessionStorage.getItem('usuarioID');
-  if (!uid) { alert("Logueate"); window.location.href = "index.html"; return; }
-  const c = clasesDisponibles[index];
-  const datos = { nombre: c.nombre, dias: c.dias, horario: c.horario, fechaReserva: new Date().toISOString() };
-  push(ref(database, `usuarios/${uid}/reservas`), datos)
-    .then(() => { alert("Clase reservada"); mostrarReservas(); })
-    .catch(() => alert("No se pudo reservar"));
-};
+  const clase = clasesDisponibles[index];
+  const datos = {
+    nombre: clase.nombre,
+    dias: clase.dias,
+    horario: clase.horario,
+    fechaReserva: new Date().toISOString()
+  };
+  push(ref(database, 'usuarios/' + uid + '/reservas'), datos)
+    .then(() => {
+      alert("Clase reservada con éxito");
+      mostrarReservas();
+    });
+}
 
-window.mostrarReservas = () => {
+function mostrarReservas() {
   const uid = sessionStorage.getItem('usuarioID');
-  if (!uid) return;
-  get(ref(database, `usuarios/${uid}/reservas`))
-    .then(snap => {
-      const lista = document.getElementById('misReservas');
-      lista.innerHTML = "";
-      if (snap.exists()) Object.values(snap.val()).forEach(r => {
-        const li = document.createElement('li');
-        li.textContent = `${r.nombre} - ${r.dias} a las ${r.horario}`;
-        lista.appendChild(li);
-      });
-      else lista.innerHTML = "<li>No tenés reservas aún</li>";
-    })
-    .catch(console.error);
-};
-
-document.addEventListener("DOMContentLoaded", () => {
-  const loginForm = document.getElementById("loginForm");
-  if (loginForm) {
-    loginForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      login();
+  const lista = document.getElementById('misReservas');
+  if (!lista) return;
+  lista.innerHTML = "";
+  get(ref(database, 'usuarios/' + uid + '/reservas'))
+    .then(snapshot => {
+      if (snapshot.exists()) {
+        Object.values(snapshot.val()).forEach(r => {
+          const li = document.createElement('li');
+          li.textContent = `${r.nombre} - ${r.dias} a las ${r.horario}`;
+          lista.appendChild(li);
+        });
+      } else {
+        lista.innerHTML = "<li>No tenés reservas aún</li>";
+      }
     });
-  }
+}
 
-  const registroForm = document.getElementById("registroForm");
-  if (registroForm) {
-    registroForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      registrar();
-    });
-  }
-});
-
-window.guardarNuevoNombre = () => {
+function guardarNuevoNombre() {
   const uid = sessionStorage.getItem('usuarioID');
   const nuevoNombre = document.getElementById('nuevoNombre').value;
-  if (!uid) {
-    alert("No estás logueado.");
-    return;
-  }
-
   set(ref(database, 'usuarios/' + uid + '/nombre'), nuevoNombre)
     .then(() => {
-      alert("Nombre actualizado con éxito.");
+      alert("Nombre actualizado");
       window.location.href = "home.html";
-    })
-    .catch((error) => {
-      alert("Error al actualizar el nombre: " + error.message);
     });
-};
+}
 
+// Registrar eventos al cargar página
 document.addEventListener("DOMContentLoaded", () => {
+  const loginForm = document.getElementById("loginForm");
+  if (loginForm) loginForm.addEventListener("submit", e => { e.preventDefault(); login(); });
+
+  const registroForm = document.getElementById("registroForm");
+  if (registroForm) registroForm.addEventListener("submit", e => { e.preventDefault(); registrar(); });
+
   const editarForm = document.getElementById("editarForm");
-  if (editarForm) {
-    editarForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      guardarNuevoNombre();
-    });
-  }
+  if (editarForm) editarForm.addEventListener("submit", e => { e.preventDefault(); guardarNuevoNombre(); });
 });
+
+// Exponer funciones globales para HTML
+window.cargarClases = cargarClases;
+window.logout = logout;
+window.reservarClase = reservarClase;

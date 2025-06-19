@@ -1,26 +1,37 @@
 body {
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   padding: 20px;
   background-color: #f0f0f0;
 }
-form, div {
+
+form,
+div {
   background: white;
   padding: 15px;
   margin-bottom: 20px;
   border-radius: 10px;
 }
+
 input {
   margin: 5px 0;
   padding: 8px;
   width: 200px;
+  box-sizing: border-box;
 }
+
 button {
   padding: 8px 12px;
   background-color: #4CAF50;
   color: white;
   border: none;
   border-radius: 5px;
+  cursor: pointer;
 }
+
+button:hover {
+  background-color: #45a049;
+}
+
 a {
   display: inline-block;
   margin-top: 10px;
@@ -28,6 +39,7 @@ a {
   color: #007BFF;
   text-decoration: none;
 }
+
 a:hover {
   text-decoration: underline;
 }
