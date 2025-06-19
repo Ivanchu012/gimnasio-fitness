@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getDatabase, ref, set, push, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 // Tu configuración de Firebase (reemplaza con la tuya)
 const firebaseConfig = {
@@ -69,16 +70,22 @@ const clasesDisponibles = [
 
 function cargarClases() {
   const uid = sessionStorage.getItem('usuarioID');
-  if (!uid) { window.location.href = "index.html"; return; }
+  if (!uid) {
+    window.location.href = "index.html";
+    return;
+  }
 
   const usuarioRef = ref(database, 'usuarios/' + uid);
   get(usuarioRef).then(snapshot => {
     if (snapshot.exists()) {
       const datos = snapshot.val();
-      document.getElementById('nombreUsuario').textContent = datos.nombre || datos.email;
+      // Mostrar nombre o email
+      document.getElementById('nombreUsuario').textContent = datos.nombre || datos.email || "Usuario";
     } else {
       document.getElementById('nombreUsuario').textContent = "Usuario";
     }
+  }).catch(() => {
+    document.getElementById('nombreUsuario').textContent = "Usuario";
   });
 
   const contenedor = document.getElementById('clases');
