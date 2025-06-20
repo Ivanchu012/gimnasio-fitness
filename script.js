@@ -205,3 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
 window.cargarClases = cargarClases;
 window.logout = logout;
 window.reservarClase = reservarClase;
+// Ejecutar automáticamente si estás en home.html
+if (window.location.pathname.includes("home.html")) {
+  cargarClases();
+}
