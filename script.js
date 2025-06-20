@@ -97,11 +97,6 @@ function cargarClases() {
       document.getElementById('nombreUsuario').textContent = "Usuario";
     });
   console.log("Datos del usuario:", datos);
-  // Mostrar nombre de usuario
-  const nombreUsuario = document.getElementById('nombreUsuario');
-  if (nombreUsuario) {
-    nombreUsuario.textContent = "Cargando...";
-  }
 
   // Mostrar clases
   const contenedor = document.getElementById('clases');
