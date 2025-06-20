@@ -49,7 +49,8 @@ function login() {
 
   signInWithEmailAndPassword(auth, email, clave)
     .then((userCred) => {
-      sessionStorage.setItem('usuarioID', userCred.user.uid);
+      const uid = userCred.user.uid;
+      sessionStorage.setItem('usuarioID', uid); // ✅ Guarda el UID
       alert("Inicio de sesión exitoso");
       window.location.href = "home.html";
     })
@@ -57,6 +58,7 @@ function login() {
       alert("Error al iniciar sesión: " + e.message);
     });
 }
+
 
 function logout() {
   signOut(auth).then(() => {
