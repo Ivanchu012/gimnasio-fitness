@@ -12,34 +12,23 @@
 
   <a href="editar.html">Editar perfil</a><br><br>
   <button onclick="logout()">Cerrar sesión</button>
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223615.png" alt="Logo mujer en bicicleta" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223616.png" alt="Logo hombre en bicicleta" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223617.png" alt="Logo hombre corriendo" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223618.png" alt="Logo mujer corriendo" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223619.png" alt="Logo hombre levantando pesas" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223620.png" alt="Logo mujer levantando pesas" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223621.png" alt="Logo hombre haciendo yoga" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223622.png" alt="Logo mujer haciendo yoga" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223623.png" alt="Logo hombre nadando" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223624 .png" alt="Logo mujer nadando" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223625.png" alt="Logo hombre haciendo pilates" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223626.png" alt="Logo mujer haciendo pilates" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223627.png" alt="Logo hombre haciendo spinning" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223628.png" alt="Logo mujer haciendo spinning" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223629.png" alt="Logo hombre haciendo crossfit" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223630.png" alt="Logo mujer haciendo crossfit" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223631.png" alt="Logo hombre haciendo boxeo" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223632.png" alt="Logo mujer haciendo boxeo" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223633.png" alt="Logo hombre haciendo artes marciales"
-    width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223634.png" alt="Logo mujer haciendo artes marciales"
-    width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223635.png" alt="Logo hombre haciendo escalada" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223636.png" alt="Logo mujer haciendo escalada" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223637.png" alt="Logo hombre haciendo senderismo" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223638.png" alt="Logo mujer haciendo senderismo" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223639.png" alt="Logo hombre haciendo ciclismo" width="60">
-  <img src="https://cdn-icons-png.flaticon.com/512/2223/2223640.png" alt="Logo mujer haciendo ciclismo" width="60">
+  <br><br>
+  <h3>Clases Disponibles</h3>
+  <p>En esta sección puedes ver las clases disponibles y reservar tu lugar.</p>
+  <p>Para reservar una clase, haz clic en el botón "Reservar" correspondiente a la clase que deseas asistir.</p>
+  <p>También puedes ver tus reservas actuales en la sección "Mis Reservas".</p>
+  <p>Si tienes alguna duda, no dudes en contactar con nuestro equipo de soporte.</p>
+  <p>¡Disfruta de tu experiencia en el gimnasio!</p>
+  <br>
+  <h3>Información del Usuario</h3>
+  <p>Nombre: <span id="nombreUsuario"></span></p>
+  <p>ID de Usuario: <span id="usuarioId"></span></p>
+  <script>
+    // Mostrar el ID del usuario
+    const usuarioId = localStorage.getItem('usuarioId');
+    document.getElementById('usuarioId').textContent = usuarioId || 'No disponible';
+  </script>
+
   <h3>Actividades disponibles</h3>
   <div id="clases"></div>
 
