@@ -1,9 +1,9 @@
+// Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getDatabase, ref, set, push, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// Tu configuración de Firebase (reemplaza con la tuya)
+// Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBoc1H3z6v0oIbxy7ZJd5tiwlYdLUWpsTI",
   authDomain: "proyecto-fit-ffd45.firebaseapp.com",
@@ -18,6 +18,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const database = getDatabase(app);
 
+// Registro
 function registrar() {
   const nombre = document.getElementById('nombre').value;
   const email = document.getElementById('email').value;
@@ -26,8 +27,6 @@ function registrar() {
   createUserWithEmailAndPassword(auth, email, clave)
     .then((userCred) => {
       const user = userCred.user;
-
-      // Guardar nombre y email en Realtime Database
       return set(ref(database, 'usuarios/' + user.uid), {
         email: user.email,
         nombre: nombre
@@ -42,7 +41,7 @@ function registrar() {
     });
 }
 
-
+// Login
 function login() {
   const email = document.getElementById('email').value;
   const clave = document.getElementById('password').value;
@@ -50,7 +49,7 @@ function login() {
   signInWithEmailAndPassword(auth, email, clave)
     .then((userCred) => {
       const uid = userCred.user.uid;
-      sessionStorage.setItem('usuarioID', uid); // ✅ Guarda el UID
+      sessionStorage.setItem('usuarioID', uid);
       alert("Inicio de sesión exitoso");
       window.location.href = "home.html";
     })
@@ -59,7 +58,7 @@ function login() {
     });
 }
 
-
+// Logout
 function logout() {
   signOut(auth).then(() => {
     sessionStorage.removeItem('usuarioID');
@@ -67,12 +66,14 @@ function logout() {
   });
 }
 
+// Clases disponibles
 const clasesDisponibles = [
   { nombre: "Zumba", dias: "Lunes y Miércoles", horario: "18:00" },
   { nombre: "Crossfit", dias: "Martes y Jueves", horario: "19:00" },
   { nombre: "Yoga", dias: "Viernes", horario: "17:00" }
 ];
 
+// Mostrar clases y usuario
 function cargarClases() {
   const uid = sessionStorage.getItem('usuarioID');
   if (!uid) {
@@ -80,23 +81,17 @@ function cargarClases() {
     return;
   }
 
-  // Mostrar nombre personalizado desde Firebase
+  // Obtener nombre desde Firebase
   const usuarioRef = ref(database, 'usuarios/' + uid);
   get(usuarioRef)
     .then((snapshot) => {
       if (snapshot.exists()) {
         const datos = snapshot.val();
         document.getElementById('nombreUsuario').textContent = datos.nombre || datos.email;
-      } else {
-        document.getElementById('nombreUsuario').textContent = "Usuario";
       }
-    })
-    .catch((error) => {
-      console.error("Error al obtener datos del usuario:", error);
-      document.getElementById('nombreUsuario').textContent = "Usuario";
     });
 
-  // Mostrar lista de clases
+  // Mostrar clases
   const contenedor = document.getElementById('clases');
   contenedor.innerHTML = "";
   clasesDisponibles.forEach((clase, index) => {
@@ -113,9 +108,11 @@ function cargarClases() {
   mostrarReservas();
 }
 
-
+// Reservar clase
 function reservarClase(index) {
   const uid = sessionStorage.getItem('usuarioID');
+  if (!uid) return;
+
   const clase = clasesDisponibles[index];
   const datos = {
     nombre: clase.nombre,
@@ -123,6 +120,7 @@ function reservarClase(index) {
     horario: clase.horario,
     fechaReserva: new Date().toISOString()
   };
+
   push(ref(database, 'usuarios/' + uid + '/reservas'), datos)
     .then(() => {
       alert("Clase reservada con éxito");
@@ -130,6 +128,7 @@ function reservarClase(index) {
     });
 }
 
+// Mostrar reservas
 function mostrarReservas() {
   const uid = sessionStorage.getItem('usuarioID');
   if (!uid) return;
@@ -157,9 +156,8 @@ function mostrarReservas() {
       lista.innerHTML = "<li>Error al obtener reservas</li>";
     });
 }
-mostrarReservas();
 
-
+// Guardar nuevo nombre (editar.html)
 function guardarNuevoNombre() {
   const uid = sessionStorage.getItem('usuarioID');
   if (!uid) {
@@ -174,7 +172,6 @@ function guardarNuevoNombre() {
     return;
   }
 
-  // Actualizar solo el campo nombre en la base de datos
   set(ref(database, 'usuarios/' + uid + '/nombre'), nuevoNombre)
     .then(() => {
       alert("Nombre actualizado correctamente");
@@ -185,8 +182,7 @@ function guardarNuevoNombre() {
     });
 }
 
-
-// Registrar eventos al cargar página
+// Eventos al cargar página
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("loginForm");
   if (loginForm) loginForm.addEventListener("submit", e => { e.preventDefault(); login(); });
@@ -198,16 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (editarForm) editarForm.addEventListener("submit", e => { e.preventDefault(); guardarNuevoNombre(); });
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-  const editarForm = document.getElementById("editarForm");
-  if (editarForm) editarForm.addEventListener("submit", e => {
-    e.preventDefault();
-    guardarNuevoNombre();
-  });
-});
-
-// Exponer funciones globales para HTML
+// Exportar funciones globales
 window.cargarClases = cargarClases;
 window.logout = logout;
 window.reservarClase = reservarClase;
-
