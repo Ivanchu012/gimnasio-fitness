@@ -88,8 +88,20 @@ function cargarClases() {
       if (snapshot.exists()) {
         const datos = snapshot.val();
         document.getElementById('nombreUsuario').textContent = datos.nombre || datos.email;
+      } else {
+        document.getElementById('nombreUsuario').textContent = "Usuario";
       }
+    })
+    .catch((error) => {
+      console.error("Error al obtener datos del usuario:", error);
+      document.getElementById('nombreUsuario').textContent = "Usuario";
     });
+  console.log("Datos del usuario:", datos);
+  // Mostrar nombre de usuario
+  const nombreUsuario = document.getElementById('nombreUsuario');
+  if (nombreUsuario) {
+    nombreUsuario.textContent = "Cargando...";
+  }
 
   // Mostrar clases
   const contenedor = document.getElementById('clases');
